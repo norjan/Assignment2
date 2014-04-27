@@ -82,7 +82,7 @@ run.analysis <- function(dir) {
   all.data.clean <- all.data.wide
   
   # Save the clean data.
-  clean.file.name <- path.join(dir, clean.file)
+  clean.file.name <- file.path(dir, clean.file)
   p("Saving clean data to:", clean.file.name)
   write.table(all.data.clean, clean.file.name, row.names = FALSE, quote = FALSE)
 }
