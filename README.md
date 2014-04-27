@@ -16,6 +16,6 @@ The cleanup script (run_analysis.R) does the following:
 
 ## Notes
 
-X_* - values (one row of 561 features for a single activity)
+X_* - feature values (one row of 561 features for a single activity)
 Y_* - activity identifiers (for each row in X_*)
 subject_* - subject identifiers for rows in X_*
