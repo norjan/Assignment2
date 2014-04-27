@@ -6,81 +6,87 @@ extracted.feature.names <- c("tBodyAcc-mean()-X", "tBodyAcc-mean()-Y", "tBodyAcc
 activities <- c(1, 2, 3, 4, 5, 6)
 activity.names <- c("WALKING", "WALKING_UPSTAIRS", "WALKING_DOWNSTAIRS", "SITTING", "STANDING", "LAYING")
 
+# A helper method for printing to the console.
 p <- function(...) {
   cat("[run_analysis.R]", ..., "\n")
 }
 
+# Makes a features filename given a dataset name.
 features.file <- function(name) {
   paste("X_", name, ".txt", sep = "")
 }
 
+# Makes an activities filename given a dataset name.
 activities.file <- function(name) {
   paste("Y_", name, ".txt", sep = "")
 }
 
+# Makes a subjects filename given a dataset name.
 subjects.file <- function(name) {
   paste("subject_", name, ".txt", sep = "")
 }
 
+# Returns an interim dataframe for a single dataset.
 get.data <- function(dir, name) {
   # Setup the file paths.
   real.dir <- file.path(dir, name)
   features.name <- file.path(real.dir, features.file(name))
   activities.name <- file.path(real.dir, activities.file(name))
   subjects.name <- file.path(real.dir, subjects.file(name))
-  
+
   p("Getting dataset:", real.dir)
-  
+
   # Read the features table.
   p("  reading features...")
   features.t <- read.table(features.name)[extracted.features]
   names(features.t) <- extracted.feature.names
-  
+
   clean.data <- features.t
-  
+
   # Read the activities list.
   p("  reading activities...")
   activities.t <- read.table(activities.name)
   names(activities.t) <- c("activity")
   activities.t$activity <- factor(activities.t$activity, levels = activities, labels = activity.names)
   clean.data <- cbind(clean.data, activity = activities.t$activity)
-  
+
   # Read the subjects list.
   p("  reading subjects...")
   subjects.t <- read.table(subjects.name)
   names(subjects.t) <- c("subject")
   clean.data <- cbind(clean.data, subject = subjects.t$subject)
-  
+
   # Return the clean data
   clean.data
 }
 
-# This function performs preliminary cleanup on a single dataset.
+# Performs the full analysis of both the test and train
+# datasets. Writes a clean dataset to disk.
 run.analysis <- function(dir) {
   p("Getting and Cleaning Data Project")
   p("Author: William Bowers")
   p("---")
   p("Starting up.")
   p("Preparing to run analysis.")
-  
+
   # Read the data.
   p("Reading datasets.")
   test <- get.data(dir, "test")
   train <- get.data(dir, "train")
-  
+
   # Join the data.
   p("Joining datasets.")
   all.data <- rbind(test, train)
-  
+
   # Reshape the data.
   p("Melting.")
   all.data.long <- melt(all.data, id = c("subject", "activity"))
   p("Dcasting.")
   all.data.wide <- dcast(all.data.long, subject + activity ~ variable, mean)
-  
+
   # Set the clean data.
   all.data.clean <- all.data.wide
-  
+
   # Save the clean data.
   clean.file.name <- file.path(dir, clean.file)
   p("Saving clean data to:", clean.file.name)
